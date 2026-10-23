@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microservices Starter</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #172033; }
+    h1 { margin-bottom: 8px; }
+    .muted { color: #64748b; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 24px; }
+    section { border: 1px solid #dbe2ea; border-radius: 12px; padding: 18px; }
+    li { margin: 10px 0; }
+    .status { font-size: 0.9rem; color: #64748b; }
+    button { padding: 9px 13px; border: 0; border-radius: 8px; background: #1d4ed8; color: white; cursor: pointer; }
+    code { background: #f1f5f9; padding: 2px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Microservices Starter</h1>
+  <p class="muted">One frontend, two Node.js backend services, and two PostgreSQL databases.</p>
+  <button id="refresh">Refresh data</button>
+  <p id="status" class="status">Loading data…</p>
+  <div class="grid">
+    <section>
+      <h2>Users</h2>
+      <p class="muted">From users-service → users_db</p>
+      <ul id="users"></ul>
+    </section>
+    <section>
+      <h2>Products</h2>
+      <p class="muted">From products-service → products_db</p>
+      <ul id="products"></ul>
+    </section>
+  </div>
+  <script src="/config.js"></script>
+  <script>
+    async function loadData() {
+      const status = document.getElementById("status");
+      status.textContent = "Loading…";
+      try {
+        const [usersResponse, productsResponse] = await Promise.all([
+          fetch(`${window.APP_CONFIG.USERS_API_URL}/users`),
+          fetch(`${window.APP_CONFIG.PRODUCTS_API_URL}/products`)
+        ]);
+        if (!usersResponse.ok || !productsResponse.ok) throw new Error("An API returned an error");
+        const [users, products] = await Promise.all([usersResponse.json(), productsResponse.json()]);
+
+        const usersList = document.getElementById("users");
+        usersList.replaceChildren();
+        users.forEach(user => {
+          const item = document.createElement("li");
+          item.textContent = `${user.name} (${user.email})`;
+          usersList.appendChild(item);
+        });
+
+        const productsList = document.getElementById("products");
+        productsList.replaceChildren();
+        products.forEach(product => {
+          const item = document.createElement("li");
+          item.textContent = `${product.name} — $${Number(product.price).toFixed(2)}`;
+          productsList.appendChild(item);
+        });
+        status.textContent = "Both backend services connected successfully.";
+      } catch (error) {
+        status.textContent = `Could not load data. Check that all containers are running. (${error.message})`;
+      }
+    }
+    document.getElementById("refresh").addEventListener("click", loadData);
+    loadData();
+  </script>
+</body>
+</html>

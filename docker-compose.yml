@@ -1,0 +1,80 @@
+services:
+  users-db:
+    image: postgres:16-alpine
+    env_file:
+      - ./users-service/.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - users_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  products-db:
+    image: postgres:16-alpine
+    env_file:
+      - ./products-service/.env
+    ports:
+      - "5434:5432"
+    volumes:
+      - products_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  users-service:
+    build: ./users-service
+    env_file:
+      - ./users-service/.env
+    ports:
+      - "3001:3001"
+    depends_on:
+      users-migrate:
+        condition: service_completed_successfully
+
+  users-migrate:
+    build: ./users-service
+    env_file:
+      - ./users-service/.env
+    command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+    depends_on:
+      users-db:
+        condition: service_healthy
+
+  products-service:
+    build: ./products-service
+    env_file:
+      - ./products-service/.env
+    ports:
+      - "3002:3002"
+    depends_on:
+      products-migrate:
+        condition: service_completed_successfully
+
+  products-migrate:
+    build: ./products-service
+    env_file:
+      - ./products-service/.env
+    command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+    depends_on:
+      products-db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - users-service
+      - products-service
+
+volumes:
+  users_data:
+  products_data:

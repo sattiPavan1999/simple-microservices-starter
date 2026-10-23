@@ -1,0 +1,20 @@
+{
+  "name": "products-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simple products microservice",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "prisma db seed"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.16.3",
+    "prisma": "^7.10.1"
+  }
+}

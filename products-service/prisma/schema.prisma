@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id    Int     @id @default(autoincrement())
+  name  String  @db.VarChar(100)
+  // The price CHECK constraint is maintained in migration SQL.
+  price Decimal @db.Decimal(10, 2)
+
+  @@map("products")
+}
