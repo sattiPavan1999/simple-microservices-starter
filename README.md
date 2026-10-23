@@ -69,6 +69,21 @@ curl http://localhost:3002/products
 
 The frontend page calls both APIs from the browser. For this starter, CORS is enabled on the backend services for local learning.
 
+## Run unit tests
+
+Each service has simple Node.js built-in tests; backend tests use mocked Prisma clients and do not require a running database:
+
+```bash
+cd frontend
+npm test
+
+cd ../users-service
+npm test
+
+cd ../products-service
+npm test
+```
+
 ## Suggested next enhancements
 
 1. Add automated tests and a Jenkins CI pipeline.
