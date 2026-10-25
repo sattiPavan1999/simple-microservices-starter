@@ -1,0 +1,10 @@
+# cp terraform.tfvars.example terraform.tfvars  and edit as needed
+
+aws_region   = "ap-south-1"
+project_name = "simple-microservices"
+environment  = "dev"
+
+# Set to false to avoid NAT gateway cost (private subnets then have no internet access)
+enable_nat_gateway = true
+
+db_instance_class = "db.t4g.micro"
