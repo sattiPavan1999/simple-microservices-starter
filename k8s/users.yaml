@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-service
+  namespace: microservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: users-service
+  template:
+    metadata:
+      labels:
+        app: users-service
+    spec:
+      # Runs DB migration + seed once per pod start (same as "users-migrate" in docker-compose)
+      initContainers:
+        - name: migrate
+          image: pavanreddy1999/node-project-users:v1
+          command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: users-db-secret
+                  key: DATABASE_URL
+            - name: PRISMA_BASELINE_TABLE
+              value: users
+      containers:
+        - name: users-service
+          image: pavanreddy1999/node-project-users:v1
+          ports:
+            - containerPort: 3001
+          env:
+            - name: PORT
+              value: "3001"
+            - name: CORS_ORIGIN
+              value: "*" # practice only; use the frontend URL in real life
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: users-db-secret
+                  key: DATABASE_URL
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  namespace: microservices
+spec:
+  type: LoadBalancer # public URL, because the browser calls this API directly
+  selector:
+    app: users-service
+  ports:
+    - port: 80
+      targetPort: 3001
