@@ -27,25 +27,26 @@ pipeline {
         }
 
         stage('test') {
-            steps {
-                // Testing the Frontend service
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm test'
-                }
-                
-                // Testing the Product microservice
-                dir('product-service') {
-                    sh 'npm install'
-                    sh 'npm test'
-                }
-                
-                // Testing the Users microservice
-                dir('users-service') {
-                    sh 'npm install'
-                    sh 'npm test'
-                }
-            }
+    steps {
+        // Testing Frontend
+        dir('frontend') {
+            sh 'npm install'
+            sh 'npm test'
         }
+        
+        // Note the fixed plural 'products-service' folder name
+        dir('products-service') {
+            sh 'npm install'
+            sh 'npm test'
+        }
+        
+        // Testing Users
+        dir('users-service') {
+            sh 'npm install'
+            sh 'npm test'
+        }
+    }
+}
+
     }
 }
