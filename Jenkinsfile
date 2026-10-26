@@ -1,6 +1,10 @@
-
 pipeline {
     agent any
+    
+    // This tells Jenkins to look for your globally configured Node environment
+    tools {
+        nodejs 'NodeJS 20' // Make sure this matches the exact name inside your Jenkins global tools!
+    }
 
     stages {
         stage('Validate Trigger') {
@@ -22,19 +26,25 @@ pipeline {
             }
         }
 
-        // stage('Build') {
-        //     steps {
-        //         sh 'npm ci'
-        //         sh 'npm run build'
-        //     }
-        // }
-        
-
         stage('test') {
             steps {
-                sh 'cd frontend && npm install && npm test'
-                sh 'cd product-service && npm install && npm test'
-                sh 'cd users-service && npm install && npm test'
+                // Testing the Frontend service
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+                
+                // Testing the Product microservice
+                dir('product-service') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+                
+                // Testing the Users microservice
+                dir('users-service') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
             }
         }
     }
