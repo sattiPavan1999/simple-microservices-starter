@@ -22,12 +22,12 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'npm ci'
-                sh 'npm run build'
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         sh 'npm ci'
+        //         sh 'npm run build'
+        //     }
+        // }
         
 
         stage('test') {
