@@ -22,9 +22,11 @@ pipeline {
             }
         }
 
-        stage('message') {
+        stage('test') {
             steps {
-                echo "This is demo-branch-1"
+                sh 'cd frontend && npm test'
+                sh 'cd product-service && npm test'
+                sh 'cd users-service && npm test'
             }
         }
     }
