@@ -27,26 +27,27 @@ pipeline {
         }
 
         stage('test') {
-    steps {
-        // Testing Frontend
-        dir('frontend') {
-            sh 'npm install'
-            sh 'npm test'
+            steps {
+                // Testing Frontend (Works perfectly)
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+                
+                // Testing Products Service
+                dir('products-service') {
+                    sh 'npm install'
+                    sh 'npx prisma generate' // Generates the missing client artifacts
+                    sh 'npm test'
+                }
+                
+                // Testing Users Service
+                dir('users-service') {
+                    sh 'npm install'
+                    sh 'npx prisma generate' // Generates the missing client artifacts
+                    sh 'npm test'
+                }
+            }
         }
-        
-        // Note the fixed plural 'products-service' folder name
-        dir('products-service') {
-            sh 'npm install'
-            sh 'npm test'
-        }
-        
-        // Testing Users
-        dir('users-service') {
-            sh 'npm install'
-            sh 'npm test'
-        }
-    }
-}
-
     }
 }
