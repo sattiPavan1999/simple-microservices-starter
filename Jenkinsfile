@@ -31,9 +31,9 @@ pipeline {
 
         stage('test') {
             steps {
-                sh 'cd frontend && npm test'
-                sh 'cd product-service && npm test'
-                sh 'cd users-service && npm test'
+                sh 'cd frontend && npm install && npm test'
+                sh 'cd product-service && npm install && npm test'
+                sh 'cd users-service && npm install && npm test'
             }
         }
     }
