@@ -24,7 +24,7 @@ pipeline {
 
         stage('message') {
             steps {
-                echo "Hello, World!"
+                echo "This is demo-branch-1"
             }
         }
     }
