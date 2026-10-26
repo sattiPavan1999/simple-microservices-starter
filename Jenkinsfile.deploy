@@ -1,0 +1,29 @@
+
+pipeline {
+    agent any
+
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Verify Main Branch') {
+            steps {
+                echo 'Changes detected in the main branch'
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application from main...'
+                // Add Docker build, push and deployment commands here.
+            }
+        }
+    }
+}
